@@ -116,6 +116,21 @@ boltApp.message(async ({ message, say }) => {
       userId: message.user ?? "",
     }).catch((e) => {
       console.log(e);
+      const errorMessage = e.message.match(/'(.*?)'/)?.[0];
+      if (errorMessage) {
+        if (errorMessage === "'Error in similaritySearch'") {
+          postEphemeral({
+            message,
+            text: "Please add a Notion Page as a data source with the command `/add-notion-page [Notion URL]`",
+          });
+          return;
+        }
+        postEphemeral({
+          message,
+          text: `An error has occurred: ${errorMessage}`,
+        });
+        return;
+      }
       postEphemeral({
         message,
         text: "An error has occurred. Please try again.",
