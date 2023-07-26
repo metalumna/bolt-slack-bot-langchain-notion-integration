@@ -3,6 +3,7 @@ import { App, KnownEventFromType, PlainTextOption } from "@slack/bolt";
 import { addNotionPage, callChain } from "./langchain";
 import { Document } from "langchain/dist/document";
 
+// Create an instance of the Slack app
 export const boltApp = new App({
   signingSecret: config.SLACK_SIGNING_SECRET,
   token: config.SLACK_BOT_TOKEN,
@@ -10,6 +11,7 @@ export const boltApp = new App({
   socketMode: true,
 });
 
+// Function to post an ephemeral message to a user
 const postEphemeral = ({
   message,
   text,
@@ -27,10 +29,13 @@ const postEphemeral = ({
   }
 };
 
+// Command to add a Notion page
 boltApp.command("/add-notion-page", async ({ command, ack, respond }) => {
+  // Extract the Notion page ID from the command text
   const id = /(?<!=)[0-9a-f]{32}/.exec(command.text)?.[0];
 
   if (!id) {
+    // Notify if the notion URL doesn't contain a valid notion page id
     await ack({
       response_type: "ephemeral",
       text: `⚠️ The notion URL \`${command.text}\` does not contain a valid notion page id`,
@@ -38,16 +43,20 @@ boltApp.command("/add-notion-page", async ({ command, ack, respond }) => {
     return;
   }
 
+  // Respond with an empty positive acknowledgement
   await ack();
 
+  // Show loading message
   await respond({
     response_type: "ephemeral",
     text: "Loading...",
   });
 
+  // Call function to add the Notion page and get the loaded pages
   const docsLoaded = await addNotionPage(id);
 
   if (docsLoaded.length === 0) {
+    // Notify if the Notion URL was not accessible
     await respond({
       response_type: "ephemeral",
       text: `⚠️ The notion URL \`${command.text}\` was not accessible`,
@@ -55,6 +64,7 @@ boltApp.command("/add-notion-page", async ({ command, ack, respond }) => {
     return;
   }
 
+  // Generate options for the loaded documents
   const documentTitles = docsLoaded.map(
     (docTitle, i) =>
       ({
@@ -67,6 +77,7 @@ boltApp.command("/add-notion-page", async ({ command, ack, respond }) => {
       } as PlainTextOption)
   );
 
+  // Show a message with the number of loaded documents and options
   await respond({
     response_type: "ephemeral",
     blocks: [
@@ -91,14 +102,15 @@ boltApp.command("/add-notion-page", async ({ command, ack, respond }) => {
   });
 });
 
+// Message event listener
 boltApp.message(async ({ message, say }) => {
   if (message.subtype === undefined || message.subtype === "bot_message") {
-    // Get the user's name for the history.
+    // Get the full user details from the user ID
     const userInfo = await boltApp.client.users.info({
       user: message.user ?? "",
     });
 
-    // Call the conversationalQAChain
+    // Call the conversationalQAChain to get the result
     const result = (await callChain(message.text ?? "", {
       name: userInfo.user?.name ?? "",
       userId: message.user ?? "",
@@ -106,7 +118,7 @@ boltApp.message(async ({ message, say }) => {
       console.log(e);
       postEphemeral({
         message,
-        text: "An error has occured please try again.",
+        text: "An error has occurred. Please try again.",
       });
     })) as void | {
       text: string;
@@ -124,7 +136,7 @@ boltApp.message(async ({ message, say }) => {
       )
     ).join(" ");
 
-    // Return the result and all sources used to get this result.
+    // Return the result and all sources used to get this result
     await say({
       blocks: [
         {
