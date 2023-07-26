@@ -1,70 +1,93 @@
-# langchain-notion-slack Setup Guide
+![Status](https://img.shields.io/badge/status-active-success.svg)
+[![GitHub Issues](https://img.shields.io/github/issues/metalumna/bolt-slack-bot-langchain-notion-integration.svg)](https://github.com/metalumna/bolt-slack-bot-langchain-notion-integration/issues)
+![GitHub Pull Requests](https://img.shields.io/github/issues-pr/metalumna/bolt-slack-bot-langchain-notion-integration.svg)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
+![Last Commit](https://img.shields.io/github/last-commit/metalumna/bolt-slack-bot-langchain-notion-integration)
+![Stars](https://img.shields.io/github/stars/metalumna/bolt-slack-bot-langchain-notion-integration?style=social)
 
-In order to set up the langchain-notion-slack app on your local machine, follow the steps outlined below. 
+# Slack Bot with Langchain and Notion 🤖 🦜🔗
 
-## Initial Setup
+Welcome to the cutting-edge and comprehensive Slack Bot Integration with Langchain and Notion. Empowered by TypeScript, Bolt SDK, and a dash of revolutionary innovation, this project is the perfect foundation to elevate your Slack Bot creation journey. Build a conversational AI Slack bot that's an expert in your data + it gives you references to your Notion pages.
 
-1. Clone this repository to your local machine.
-2. Once cloned, navigate into the directory and find the file named `.env.example`.
-3. Copy the contents of `.env.example` into a new file named `.env` in the same directory.
-4. Install dependancies
+## ⭐ Features
+
+- An easy-to-use starter project that you can leverage to initiate your own Slack bot.
+- Built with the efficiency of the Bolt SDK and the prowess of TypeScript.
+- The codebase is clear, concise, and thoroughly commented for a better understanding.
+- The project is designed to be real-world app ready, extend and customize as you prefer.
+- End up with a **powerful conversational AI knowledge base!**
+
+
+## 🚀 Quick Start
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/metalumna/bolt-slack-bot-langchain-notion-integration.git
+   ```
+
+2. Move into the project directory:
+
+   ```bash
+   cd bolt-slack-bot-langchain-notion-integration
+   ```
+
+3. Install the dependencies:
+
    ```bash
    npm install
    ```
 
-## Filling Out the .env File
+4. Start the bot by filling out the necessary configurations (see below) and running:
 
-The .env file consists of several environment variables that need to be filled out for proper functioning of the application.
+   ```bash
+   npm run dev
+   ```
 
-### 1. EXPRESS_PORT
-The `EXPRESS_PORT` is the port on which your Express.js server will be running. This can remain as '8081' unless this port is already in use on your system.
+## 🔧 Configuration
+First step is to copy `.env.example` to `.env` with 
+```bash
+cp .env.example .env
+```
 
-### 2. OPENAI_API_KEY
-To obtain your OpenAI API Key:
-1. [Log in to your OpenAI account](https://beta.openai.com/signup/)
-2. Navigate to the API section.
-3. Copy your API Key and paste it in the `OPENAI_API_KEY` field in your .env file.
+### OpenAI
+- Find your API key in the account section of your openAI account and add it to `OPENAI_API_KEY` in `.env`.
 
-### 3. NOTION_TOKEN
-To get your Notion API token:
-1. [Log in to your Notion account](https://www.notion.so/login)
-2. Go to "My Integrations" on the left-hand side.
-3. Click on "+ New Integration" button.
-4. After setting it up, you'll receive a token. Copy and paste this into the `NOTION_TOKEN` field.
+### Slack
+- Create a new Slack app, provide necessary permissions.
+  - `chat:write`
+  - `users:read`
+- Enable direct messaging
+- Configure the slash commands `/add-notion-page`
+- Install the app in your workspace.
+- Subscribe to events, and reinstall app to your workspace.
+- Copy your Bot token `SLACK_BOT_TOKEN`, App token `SLACK_APP_TOKEN`, and Signing secret (`SLACK_SIGNING_SECRET`) to your `.env`.
 
-### 4. Slack Configuration
-This involves the `SLACK_SIGNING_SECRET`, `SLACK_BOT_TOKEN`, `SLACK_APP_TOKEN`, and `SLACK_PORT`.
-1. [Create a new Slack App or use an existing one](https://api.slack.com/apps?new_granular_bot_app=1)
-2. Go to the "Basic Information" section to find your `SLACK_SIGNING_SECRET`.
-3. `SLACK_BOT_TOKEN` and `SLACK_APP_TOKEN` can be found under the "OAuth & Permissions" section after installing the app to your workspace.
-4. For the `SLACK_PORT`, it can remain as '8080' unless this port is already in use on your system.
+### Notion
+- Create a new integration in your Notion account and copy the Secret token to `NOTION_TOKEN` in your `.env`.
+- Add your new integration to the desired Notion page.
 
-### 5. Weaviate Configuration
-The Weaviate related fields are `WEAVIATE_TOKEN`, `WEAVIATE_SCHEME`, `WEAVIATE_HOST`, and `WEAVIATE_INDEX`.
-1. [Login to Weaviate and start a new temporary (free) instance](https://www.semi.technology/product/weaviate.html)
-2. The `WEAVIATE_TOKEN` will be your authentication token for accessing your Weaviate instance.
-3. `WEAVIATE_SCHEME` is the URL scheme of your Weaviate instance, usually 'http' or 'https'.
-4. `WEAVIATE_HOST` is the hostname or IP address of your Weaviate instance (without 'https://').
-5. `WEAVIATE_INDEX` is the name of your data index in Weaviate.
+### Weaviate
+- Create a new Weaviate account and set up a new cluster.
+- Get the details and add them to your `.env`
+  - Authentication token `WEAVIATE_TOKEN`
+  - URL scheme `WEAVIATE_SCHEME` (https)
+  - Hostname `WEAVIATE_HOST` (URL without https://)
+  - Data index name `WEAVIATE_INDEX` (NotionData)
 
-### 6. Redis Configuration
-The Redis related fields are `REDIS_USER`, `REDIS_PASSWORD`, and `REDIS_URL`.
-1. [Log in to Redis and start a new (free) instance](https://redislabs.com/)
-2. `REDIS_USER` is the username you use to connect to your Redis database.
-3. `REDIS_PASSWORD` is the password associated with the above username.
-4. `REDIS_URL` is the hostname or IP address of your Redis instance.
+### Redis
+- Create a new Redis account, set up a new Redis subscription and then create a database.
+- Get the details and add them to your `.env`
+  - username `REDIS_USER` (default)
+  - password `REDIS_PASSWORD`
+  - public endpoint `REDIS_URL` (prefix with redis://)
 
-Remember to save the `.env` file after making these changes.
+> A comprehensive guide, including a dive into the code is on MetaLumna: [Unleashing the Potential of a Bolt Slack Bot: A Thorough Guide to Integrating Langchain and Notion](https://metalumna.com/articles/unleashing-the-potential-of-a-bolt-slack-bot-a-thorough-guide-to-integrating-langchain-and-notion)
 
-## Usage
-1. Run the application locally
-    ```bash
-    npm run dev
-    ```
-2. Add the slack bot to your new slack workspace.
-3. Add a notion page
-   1. Open up your new slack bot and use the slash command
-        ```
-        /add-notion-page [notionPageURL]
-        ```
-4. Once the pages have been loaded you are free to start a conversation with your data.
+## 🔎 Exploring the Code
+
+This repo houses an easy to follow codebase that covers creating a conversation AI knowledge base Slack bot with TypeScript and Bolt SDK. Be sure to explore the `src/` directory to find main code segments, and check out the comments for running explanation of key sections!
+
+## 💬 Contribution
+
+Contributions, issues, and feature requests are welcome! If you find any bugs or issues, create a new issue right away!
